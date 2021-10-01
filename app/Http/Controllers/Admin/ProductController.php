@@ -65,7 +65,7 @@ class ProductController extends Controller
         $this->data['allData'] =  $queryData->paginate($perPage)->appends( request()->query() ); // paginate
         $this->layout('index');
 
-    }
+    } 
 
     public function create()
     {

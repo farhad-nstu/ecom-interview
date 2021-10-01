@@ -68,40 +68,20 @@ $(document).ready(function(){
 			}
 		}
 	}
-
-
-
 });
 
-
-
-
-
-
   if ($('.editor-min').length ) {
- /**
- * Editor
- * Minimal Settings
- **/
-  tinymce.init({
-    selector: '.editor-min',
-    height: 200,
-	menubar:false,
-    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist',
+	  tinymce.init({
+	    selector: '.editor-min',
+	    height: 200,
+		menubar:false,
+	    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | ' +
+	      'bullist numlist',
 
-  });
-
+	  });
   }
 
-
-
-
  if ($('.editor').length ) {
- /**
- * Base Tinyymce editor
- * Maximum Settings
- **/
 
   tinymce.init({
     selector: '.editor',
@@ -289,42 +269,6 @@ if ( $('.onlyNumber').length) {
 	$('.onlyNumber').on('keyup', function (e) {
 		if (/\D/g.test(this.value)) {
 			this.value = this.value.replace(/\D/g, '');
-		}
-	});
-}
-
-
-
-
-// checkin count & guest Registration Count
-$(document).ready(function () {
-	checkinCount();
-	guestRegistrationCount();
-});
-
-setInterval(function() {
-	checkinCount();
-	guestRegistrationCount();
-}, 60 * 1000);
-
-// checkin count
-function checkinCount() {
-	$.ajax({
-		url: APP_URL +"/hotels/count-checkin-reservation",
-		type:"get",
-		success:function (data) {
-			$('#total_reservation_count').html(data);
-		}
-	});
-}
-
-// Guest Registration Count
-function guestRegistrationCount() {
-	$.ajax({
-		url: APP_URL +"/hotels/count-guest-registration",
-		type:"get",
-		success:function (data) {
-			$('#total_guest_registration_count').html(data);
 		}
 	});
 }
