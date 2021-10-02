@@ -37,7 +37,7 @@
     <!-- Summernote -->
     <script src="{{ asset('backend') }}/plugins/summernote/summernote-bs4.min.js"></script>
 
-    <script src="{{url('backend/custom.js')}}"></script>
+    <!-- <script src="{{url('backend/custom.js')}}"></script> -->
     <script src="{{url('backend/js/demo.js')}}"></script>
     <script src="{{url('backend/js/app-helper.js')}}"></script>
     <script src="{{url('backend/js/admin-scripts.js')}}"></script>

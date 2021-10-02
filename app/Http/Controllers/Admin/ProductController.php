@@ -70,12 +70,10 @@ class ProductController extends Controller
     public function create()
     {
         $this->data = [
-            'title'         => 'Add New Award',
+            'title'         => 'Add New Product',
             'page_icon'     => '<i class="fa fa-plus-circle"></i>',
             'objData'       => '',
         ];
-
-        $this->data['employees'] =  HrmsEmployee::all();
 
         $this->layout('create');
     }
@@ -86,12 +84,10 @@ class ProductController extends Controller
         if( !$id ){ exit('Bad Request!'); }
 
         $this->data = [
-            'title'         => 'Edit Award',
+            'title'         => 'Edit Product',
             'page_icon'     => '<i class="fa fa-edit"></i>',
             'objData'       => $this->model::where($this->tableId, $id)->first(),
         ];
-
-        $this->data['employees'] =  HrmsEmployee::all();
 
         $this->layout('create');
     }
@@ -101,14 +97,21 @@ class ProductController extends Controller
         $id = $request[$this->tableId];
 
         $rules = [
-            'employee_id'        => 'required',
-            'award_title'        => 'required|string',
+            'name'        => 'required',
+            'price'        => 'required',
+            'quantity'        => 'required',
         ];
 
         $attribute =[
-            'employee_id'      => 'Employee',
-            'award_title'      => 'Title',
+            'name'      => 'Product Name',
+            'price'      => 'Product Price',
+            'quantity'      => 'Product Quantity',
         ];
+
+        if(empty($id)) {
+            $rules['picture'] = 'required';
+            $attribute['picture'] = 'Product Image';
+        } 
 
         $customMessages =[];
 
@@ -118,20 +121,20 @@ class ProductController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }  
 
-        $this->awardData = [ 
-            'employee_id' => $request['employee_id'],
-            'award_title' => $request['award_title'],
-            'award_ground'   => $request['award_ground'],
-            'award_date'   => $request['award_date'],
+        $this->productData = [ 
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'price' => $request['price'],
+            'quantity'   => $request['quantity'],
         ];
 
-        if($request->hasFile('award_document')) {
+        if($request->hasFile('picture')) {
             
             if(! empty($id)) {
-                $awardDocument = $this->model::where($this->tableId, $id)->pluck('award_document')->first();
+                $productPic = $this->model::where($this->tableId, $id)->pluck('picture')->first();
 
-                if(! empty($awardDocument)) {
-                    $filePath = public_path('uploads/hrms/'.$request['employee_id'].'/awards/'.$awardDocument);
+                if(! empty($productPic)) {
+                    $filePath = public_path('upload/products/'.$productPic);
 
                     if(file_exists($filePath)) {
                         unlink($filePath);
@@ -140,27 +143,19 @@ class ProductController extends Controller
                 }               
             }
 
-            $filename = time().'.'.$request->file('award_document')->getClientOriginalExtension();
-            $request->file('award_document')->move(public_path('uploads/hrms/'.$request['employee_id'].'/awards'), $filename);
-            $this->awardData['award_document'] = $filename;
+            $filename = time().'.'.$request->file('picture')->getClientOriginalExtension();
+            $request->file('picture')->move(public_path('upload/products'), $filename);
+            $this->productData['picture'] = $filename;
         }  
 
         if ( empty($id) ){
             // Insert Query
-            $this->model::create($this->awardData);
-
-            $log_title = 'Hrms (Employee Id - '.$this->awardData['employee_id'].', award- '.$this->awardData ['award_title'] .') was created by '. Sentinel::getUser()->full_name;
-            Logs::create($log_title,'award_create');
-
+            $this->model::create($this->productData);
             return redirect($this->bUrl)->with('success', 'Record Successfully Created.');
 
-        }else{
+        } else {
             // Update Query
-            $this->model::where($this->tableId, $id)->update($this->awardData);
-
-            $log_title = 'Hrms (Employee Id - '.$this->awardData['employee_id'].', award- '.$this->awardData ['award_title'] .') was updated by '. Sentinel::getUser()->full_name;
-            Logs::create($log_title,'award_update');
-
+            $this->model::where($this->tableId, $id)->update($this->productData);
             return redirect($this->bUrl)->with('success', 'Successfully Updated');
         }
     }
@@ -171,13 +166,12 @@ class ProductController extends Controller
         if( !$id ){ exit('Bad Request!'); }
 
         $this->data = [
-            'title'         => 'Award Information',
+            'title'         => 'Product Information',
             'page_icon'     => '<i class="fa fa-eye"></i>',
-            'objData'       => $this->model::with(['employee'])->where($this->tableId, $id)->first(),
+            'objData'       => $this->model::where($this->tableId, $id)->first(),
         ];                 
 
         $this->layout('view');
-
     }
 
     public function destroy(Request $request, $id)
@@ -186,29 +180,19 @@ class ProductController extends Controller
         if( !$id ){ exit('Bad Request!'); }
 
         $this->data = [
-            'title'     => 'Delete Award',
+            'title'     => 'Delete Product',
             'pageUrl'   => $this->bUrl.'/delete/'.$id,
             'page_icon' => '<i class="fa fa-book"></i>',
             'objData'   => $this->model::where($this->tableId, $id)->first(),
         ];
 
-        $this->data['tableID'] = $this->tableId;
-        $this->data['bUrl'] = $this->bUrl;
+        if($request->method() === 'POST' ) {             
 
-        if($request->method() === 'POST' ){
-              
-            $employee = $this->data['objData']->employee_id;
-            $award = $this->data['objData']->award_title;
+            $this->model::where($this->tableId, $id)->delete();
+            echo json_encode(['fail' => FALSE, 'error_messages' => "Product was deleted"]);
 
-            HrmsAward::where('award_id',$id)->delete();
-
-            $log_title = 'Hrms (Employee Id - '.$employee.', award- '.$award.') was deleted by '. Sentinel::getUser()->full_name;
-            Logs::create($log_title,'award_delete');
-
-            echo json_encode(['fail' => FALSE, 'error_messages' => "Award ".$this->data['objData']->award_title." was deleted."]);
-        }else{
-            return view($this->moduleName.'::awards.delete', $this->data);
+        } else {
+            $this->layout('delete');
         }
-
     }
 }

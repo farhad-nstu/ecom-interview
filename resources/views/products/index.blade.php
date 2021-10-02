@@ -76,8 +76,8 @@
                   <th class="text-center">SL</th>
                   <th class="sort" data-row="name" id="name">Title</th>
                   <th class="text-center">Quantity</th>
-                  <th class="text-center">Price</th>
-                  <th class="">Picture</th>
+                  <th class="text-right">Price</th>
+                  <th class="text-center">Picture</th>
                   <th class="text-center">Manage</th>
                 </tr>
               </thead>
@@ -94,8 +94,8 @@
                       <td class="text-center">{{ $c+$serial }}</td>
                       <td class="pl-1">{{ $data->name }}</td>
                       <td class="text-center">{{ $data->quantity }}</td>
-                      <td class="text-center">{{ $data->price }}</td>
-                      <td class="text-center">{{ $data->picture }}</td>
+                      <td class="text-right">{{ $data->price }}</td>
+                      <td class="text-center"><img src="{{ asset('upload/products/'.$data->picture) }}" width="100" height="80"></td>
                       <td class="text-center">
                         <div class="btn-group">
                           <button type="button" class="btn btn-outline-info">
