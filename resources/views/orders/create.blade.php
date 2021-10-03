@@ -121,17 +121,17 @@
             <div class="form-group row">
               <label for="order_status" class="col-sm-4 col-form-label">Status</label>
               <div class="col-sm-8">
-                <select name="order_status" id="order_status" class="form-control select2" style="width: 100%;">
+                <select name="order_status" id="order_status" class="form-control" style="width: 100%;">
                   <option value="">Select Status</option>
-                  <option {{(getValue('order_status',$objData) == 1) ? 'selected':''}} value="1">Approved
+                  <option {{(getValue('order_status', $objData) == 1) ? 'selected':''}} value="1">Approved
                   </option>
-                  <option {{(getValue('order_status',$objData) == 0) ? 'selected':''}} value="0">Rejected
+                  <option {{(getValue('order_status', $objData) == 0) ? 'selected':''}} value="0">Rejected
                   </option>
-                  <option {{(getValue('order_status',$objData) == 2) ? 'selected':''}} value="2">Processing
+                  <option {{(getValue('order_status', $objData) == 2) ? 'selected':''}} value="2">Processing
                   </option>
-                  <option {{(getValue('order_status',$objData) == 3) ? 'selected':''}} value="3">Shipped
+                  <option {{(getValue('order_status', $objData) == 3) ? 'selected':''}} value="3">Shipped
                   </option>
-                  <option {{(getValue('order_status',$objData) == 4) ? 'selected':''}} value="4">Delivered
+                  <option {{(getValue('order_status', $objData) == 4) ? 'selected':''}} value="4">Delivered
                   </option>
                 </select>
               </div>

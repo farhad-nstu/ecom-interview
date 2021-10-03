@@ -102,11 +102,19 @@
                       <td class="text-center">{{ $data->product_quantity }}</td>
                       <td class="text-right">{{ $data->net_price }}</td>
                       <td class="text-center">
-                        <a href="" class="btn btn-sm btn-primary">{{ get_status($data->order_status) }}</a>
+                        <a class="dropdown-item" id="action" data-toggle="modal" data-target="#windowmodal"
+                              href="{{url($bUrl.'/status/'.$data->$tableID)}}">
+                          <button class="btn btn-sm btn-primary">{{ get_status($data->order_status) }}</button>
+                        </a>
                       </td>
                       <td class="text-center">{{ $data->order_date }}</td>
                       <td class="text-center">
                         <div class="btn-group">
+
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-outline-info">
+                            <a href="{{ url($bUrl.'/'.$data->$tableID.'/edit-history') }}">Edit History</a>
+                          </button>
 
                           <button type="button" class="btn btn-outline-info dropdown-toggle dropdown-hover dropdown-icon"
                             data-toggle="dropdown">

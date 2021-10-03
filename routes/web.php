@@ -30,5 +30,8 @@ Route::group(['prefix'=>'admin', 'namespace'=>'Admin'], function() {
   Route::post('/orders/store', 'OrderController@store')->name('orders.store');
   Route::match(['get', 'post'], '/orders/delete/{id}', 'OrderController@destroy')
       ->where(['id'=>'[0-9]+'])->name('orders.delete');
+  Route::match(['get', 'post'], '/orders/status/{id}', 'OrderController@update_status')
+      ->where(['id'=>'[0-9]+'])->name('orders.status');
+  Route::get('/orders/{order_id}/edit-history', 'OrderController@get_edit_history')->name('orders.edit_history');
     
 });

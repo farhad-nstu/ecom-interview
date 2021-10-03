@@ -9,6 +9,7 @@ use App\Product;
 use Illuminate\Support\Str;
 use Validator;
 use DB;
+use App\Logs;
 
 class OrderController extends Controller
 {
@@ -51,15 +52,6 @@ class OrderController extends Controller
 
         if($request->method() === 'POST'){
             session(['per_page' => $request->post('per_page') ]);
-        }
-
-        // model query...
-        $queryData = Order::orderBy( getOrder(Order::$sortable, $this->tableId)['by'], getOrder(Order::$sortable, $this->tableId)['order']);
-
-        //filter by text.....
-        if( $request->filled('filter') ) {
-            $this->data['filter'] = $filter = $request->get('filter');
-            $queryData->where('name', 'like', '%'.$filter.'%');
         }
 
         $queryData = DB::table('orders')
@@ -108,6 +100,10 @@ class OrderController extends Controller
             'objData'       => $this->model::where($this->tableId, $id)->first(),
         ];
 
+        if($this->data['objData']->order_status == 1 || $this->data['objData']->order_status == 0) {
+            return redirect($this->bUrl)->with('success', 'Order has already approved or rejected');
+        }
+
         $this->layout('create');
     }
 
@@ -149,7 +145,7 @@ class OrderController extends Controller
             'shipping_address'   => $request['shipping_address'],
             'shipping_cost'   => $request['shipping_cost'],
             'net_price'   => $request['net_price'],
-            'order_status'   => $request['order_status'],
+            'order_status'   => 2,
         ];
 
         if ( empty($id) ) {
@@ -159,8 +155,28 @@ class OrderController extends Controller
 
         } else {
             // Update Query
-            $this->model::where($this->tableId, $id)->update($this->orderData);
-            return redirect($this->bUrl)->with('success', 'Successfully Updated');
+            $presentOrderData = $this->model::where($this->tableId, $id)->first();
+
+            if($presentOrderData->order_status != 1 || $presentOrderData->order_status != 0) {
+                $editHistoryData = [ 
+                    'order_id' => $presentOrderData->id,
+                    'product_id' => $presentOrderData->product_id,
+                    'user_id' => $presentOrderData->user_id,
+                    'product_quantity' => $presentOrderData->product_quantity,
+                    'order_date'   => $presentOrderData->order_date,
+                    'shipping_address'   => $presentOrderData->shipping_address,
+                    'shipping_cost'   => $presentOrderData->shipping_cost,
+                    'net_price'   => $presentOrderData->net_price,
+                    'order_status'   => $presentOrderData->order_status,
+                    'edit_date' => date('Y-m-d h:i:sa'),
+                ];
+                Logs::create($editHistoryData);
+
+                $this->model::where($this->tableId, $id)->update($this->orderData);
+                return redirect($this->bUrl)->with('success', 'Successfully Updated');
+            } else {
+                return redirect($this->bUrl)->with('success', 'Order has already approved or rejected');
+            }
         }
     }
 
@@ -184,5 +200,43 @@ class OrderController extends Controller
         } else {
             $this->layout('delete');
         }
+    }
+
+    public function update_status(Request $request, $id)
+    {
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if( !$id ){ exit('Bad Request!'); }
+
+        $this->data = [
+            'title'     => 'Update Status',
+            'pageUrl'   => $this->bUrl.'/status/'.$id,
+            'page_icon' => '<i class="fa fa-book"></i>',
+            'objData'   => $this->model::where($this->tableId, $id)->first(),
+        ];
+
+        if($request->method() === 'POST' ) {    
+            $this->model::where($this->tableId, $id)->update(['order_status' => $request->order_status]);
+            echo json_encode(['fail' => FALSE, 'error_messages' => "Status waa updated!"]);
+        } else {
+            $this->layout('editStatus');
+        }
+    }
+
+    public function get_edit_history($order_id)
+    {
+        $this->data = [
+            'title'         => 'Edit History List',
+            'pageUrl'         => $this->bUrl,
+            'page_icon'     => '<i class="fa fa-book"></i>',
+        ];
+
+        $queryData = DB::table('logs')
+                    ->join('products', 'logs.product_id', '=', 'products.id')
+                    ->join('users', 'logs.user_id', '=', 'users.id')
+                    ->select('logs.*', 'products.id as product_id', 'products.name as name', 'products.picture', 'users.firstname', 'users.lastname')
+                    ->get();
+
+        $this->data['allData'] =  $queryData;
+        $this->layout('editHistory');
     }
 }

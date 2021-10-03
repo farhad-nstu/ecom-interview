@@ -12,13 +12,14 @@
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
-  <link rel="stylesheet" href="{{url('backend')}}/css/style.css">
+  <link rel="stylesheet" href="{{ asset('backend') }}/css/style.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('backend') }}/dist/css/adminlte.min.css">
   <!-- Select2 -->
   <link rel="stylesheet" href="{{ asset('backend') }}/plugins/select2/css/select2.min.css">
 
-  <link rel="stylesheet" href="{{url('/')}}/backend/plugins/datepicker/jquery-ui.css">
+  <link rel="stylesheet" href="{{ asset('backend') }}/plugins/datepicker/jquery-ui.css">
+  <link href="{{ asset('backend') }}/plugins/toastr/toastr.min.css" rel="stylesheet">
   <!-- summernote -->
   <link rel="stylesheet" href="{{ asset('backend') }}/plugins/summernote/summernote-bs4.css">
   <!-- Google Font: Source Sans Pro -->
