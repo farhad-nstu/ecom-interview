@@ -28,6 +28,16 @@
               </p>
             </a>
           </li>
+
+          <li class="nav-item has-treeview menu-open">
+            <a href="{{ url('admin/orders') }}" class="nav-link  {{ (request()->is('admin/orders*')) ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Orders
+              </p>
+            </a>
+          </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

@@ -14,6 +14,19 @@ function validation_errors($errors) {
     }
 }
 
+function get_status($data) {
+    if($data == 1){        
+        echo 'Approved';
+    } elseif ($data == 0) {
+        echo 'Rejected';
+    } elseif ($data == 2) {
+        echo 'Processing';
+    } elseif ($data == 3) {
+        echo 'Shipped';
+    } elseif ($data == 4) {
+        echo 'Delivered';
+    }
+}
 
 /*****
  * getOrder()

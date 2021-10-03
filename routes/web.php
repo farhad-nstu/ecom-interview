@@ -19,5 +19,16 @@ Route::group(['prefix'=>'admin', 'namespace'=>'Admin'], function() {
   Route::post('/products/store', 'ProductController@store')->name('products.store');
   Route::match(['get', 'post'], '/products/delete/{id}', 'ProductController@destroy')
       ->where(['id'=>'[0-9]+'])->name('products.delete');
+
+  Route::resource('/orders', 'OrderController',  [
+      'names' => [
+          'create' => 'orders.create',
+          'edit' => 'orders.edit',
+      ]])->only(['create', 'edit']);
+
+  Route::match(['get', 'post'], '/orders', 'OrderController@index')->name('orders');
+  Route::post('/orders/store', 'OrderController@store')->name('orders.store');
+  Route::match(['get', 'post'], '/orders/delete/{id}', 'OrderController@destroy')
+      ->where(['id'=>'[0-9]+'])->name('orders.delete');
     
 });
