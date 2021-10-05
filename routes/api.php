@@ -33,7 +33,12 @@ function(){
     Route::post("category/update/{id}","CategoryController@update_category");
     Route::post("category/delete/{id}","CategoryController@delete_category");
     Route::get("category/search/{search}/{token}/{pagination?}","CategoryController@search_category");
-} 
-);
+
+    Route::get("product/get-all/{token}/{pagination?}","ProductController@getPaginatedData");
+    Route::get("product/search/{search}/{token}/{pagination?}","ProductController@searchData");
+    Route::post("product/order/{id}/{token}","ProductController@order_product");
+    Route::get("product-details/{id}","ProductController@product_details");
+
+});
 
   

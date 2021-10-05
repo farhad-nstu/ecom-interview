@@ -117,7 +117,6 @@ class OrderController extends Controller
             'product_quantity'        => 'required',
             'order_date'        => 'required',
             'net_price'        => 'required',
-            'order_status'        => 'required',
         ];
 
         $attribute =[
@@ -126,7 +125,6 @@ class OrderController extends Controller
             'product_quantity'      => 'Product Quantity',
             'order_date'      => 'Order Date',
             'net_price'      => 'Net Price',
-            'order_status'      => 'Order Status',
         ];
 
         $customMessages =[];
