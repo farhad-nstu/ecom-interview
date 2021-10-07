@@ -83,7 +83,7 @@ class ProductController extends Controller
 
 	public function order_product(Request $request, $id, $token)
 	{
-        dd($request);
+        // dd($request->all());
 		$user = auth("users")->authenticate($token);
 	    $user_id = $user->id;
 	    $product = $this->products::where('id', $id)->first();
@@ -91,13 +91,21 @@ class ProductController extends Controller
 		$orderData = [ 
             'product_id' => $id,
             'user_id' => $user_id,
-            'product_quantity' => 1,
+            'product_quantity' => $request->product_quantity,
             'order_date'   => date('Y-m-d h:i:sa'),
-            // 'shipping_address'   => $request['shipping_address'],
-            // 'shipping_cost'   => $request['shipping_cost'],
-            'net_price'   => $product->price,
-            'order_status'   => 2,
+            'shipping_address'   => $request->shipping_address,
+            // 'shipping_cost'   => $request->shipping_cost,
+            // 'net_price'   => $product->price,
+            'order_status'   => "processing",
         ];
+
+        if($request->inside_outside == "Outside Dhaka") {
+            $orderData['shipping_cost'] = 100;
+            $orderData['net_price'] = $product->price * $request->product_quantity + 100;
+        } else {
+            $orderData['shipping_cost'] = 60;
+            $orderData['net_price'] = $product->price * $request->product_quantity + 60;
+        }
 
         Order::create($orderData);
 
