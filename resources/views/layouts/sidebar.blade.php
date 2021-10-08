@@ -38,6 +38,15 @@
             </a>
           </li>
 
+          <li class="nav-item has-treeview menu-open">
+            <a href="{{ url('admin/delivered/orders') }}" class="nav-link  {{ (request()->is('admin/delivered/orders*')) ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Move To Delivered
+              </p>
+            </a>
+          </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

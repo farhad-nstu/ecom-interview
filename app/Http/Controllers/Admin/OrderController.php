@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Validator;
 use DB;
 use App\Logs;
+use App\Delivered;
 
 class OrderController extends Controller
 {
@@ -242,5 +243,30 @@ class OrderController extends Controller
 
         $this->data['allData'] =  $queryData;
         $this->layout('editHistory');
+    }
+
+    public function deliver_order()
+    {
+        if(date('g:i a') == "12:00 am") {
+            $orders = $this->model::where('order_status', 'delivered')->get();
+            foreach ($orders as $order) {
+                $deliveredOrderData = [ 
+                    'order_id' => $order->id,
+                    'product_id' => $order->product_id,
+                    'user_id' => $order->user_id,
+                    'product_price' => $order->product_price,
+                    'product_quantity' => $order->product_quantity,
+                    'order_date'   => $order->order_date,
+                    'shipping_address'   => $order->shipping_address,
+                    'shipping_cost'   => $order->shipping_cost,
+                    'net_price'   => $order->net_price,
+                ];
+
+                Delivered::create($deliveredOrderData);
+
+                $order->delete();
+            }
+        }
+        return redirect($this->bUrl);
     }
 }
