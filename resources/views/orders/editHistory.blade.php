@@ -65,8 +65,8 @@
                           <button class="btn btn-sm btn-primary">{{ get_status($data->order_status) }}</button>
                         </a>
                       </td>
-                      <td class="text-center">{{ $data->order_date }}</td>
-                      <td class="text-center">{{ $data->edit_date }}</td>
+                      <td class="text-center">{{ change_date_format($data->order_date) }}</td>
+                      <td class="text-center">{{ change_date_format($data->edit_date) }}</td>
                       <td class="text-center">{{ $data->product_quantity }}</td>
                       <td class="text-right">{{ $data->net_price }}</td>
                     </tr>

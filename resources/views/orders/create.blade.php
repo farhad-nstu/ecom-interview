@@ -123,15 +123,15 @@
               <div class="col-sm-8">
                 <select name="order_status" id="order_status" class="form-control" style="width: 100%;">
                   <option value="">Select Status</option>
-                  <option {{(getValue('order_status', $objData) == 1) ? 'selected':''}} value="1">Approved
+                  <option {{(getValue('order_status', $objData) == 'approved') ? 'selected':''}} value="approved">Approved
                   </option>
-                  <option {{(getValue('order_status', $objData) == 0) ? 'selected':''}} value="0">Rejected
+                  <option {{(getValue('order_status', $objData) == 'rejected') ? 'selected':''}} value="rejected">Rejected
                   </option>
-                  <option {{(getValue('order_status', $objData) == 2) ? 'selected':''}} value="2">Processing
+                  <option {{(getValue('order_status', $objData) == 'processing') ? 'selected':''}} value="processing">Processing
                   </option>
-                  <option {{(getValue('order_status', $objData) == 3) ? 'selected':''}} value="3">Shipped
+                  <option {{(getValue('order_status', $objData) == 'shipped') ? 'selected':''}} value="shipped">Shipped
                   </option>
-                  <option {{(getValue('order_status', $objData) == 4) ? 'selected':''}} value="4">Delivered
+                  <option {{(getValue('order_status', $objData) == 'delivered') ? 'selected':''}} value="delivered">Delivered
                   </option>
                 </select>
               </div>

@@ -169,17 +169,6 @@ if ( $('.datepicker, .dateOfBirth, .toDayDatePicker, .checkoutDatePicker').lengt
 
 }
 // Date Picker
-if ( $('.datepicker').length){
-	$(function () {
-		$(".datepicker").datepicker({
-			showAnim: "slide",
-			changeMonth: true,
-			changeYear: true,
-			dateFormat: 'yy-mm-dd',
-			yearRange: "-80:+80"
-		});
-	});
-}
 if ( $('.dateOfBirth').length){
 	$(function () {
 		$(".dateOfBirth").datepicker({
@@ -193,57 +182,11 @@ if ( $('.dateOfBirth').length){
 	});
 }
 
-if ( $('.toDayDatePicker').length){
-	$(function () {
-		var date = new Date();
-		var hours = date.getHours();
-		var day = '0';
-		if (hours >=0 && hours <8){
-			day = '-1'
-		}
-		$(".toDayDatePicker").datepicker({
-			showAnim: "slide",
-			dateFormat: 'yy-mm-dd',
-			minDate: day
-		});
-	});
-}
-
-
-if ( $('.checkoutDatePicker').length){
-	$(function () {	var date = new Date();
-		var hours = date.getHours();
-		var day = '1';
-		if (hours >=0 && hours <8){
-			day = '0'
-		}
-		$(".checkoutDatePicker").datepicker({
-			showAnim: "slide",
-			dateFormat: 'yy-mm-dd',
-			minDate: day
-		});
-	});
-}
-
 
 if ($('#display-btn').length) {
 	$('#display-btn').click(function () {
 		$('.btn-d-none').fadeToggle();
 	});
-}
-
-if ( $('.timePicker').length) {
-	(function($) {
-			"use strict";
-			$(function(){
-				$('.timePicker').timepicker({
-					'scrollDefault': 'now',
-					'timeFormat': 'h:i A',
-					'step':15
-				});
-			});
-		}
-	)(jQuery);
 }
 
 function printData(print_aria_id_name)

@@ -76,8 +76,9 @@
                   <th class="text-center">SL</th>
                   <th class="text-center">User</th>
                   <th class="sort" data-row="name" id="name">Title</th>
+                  <th class="text-right">Product Price</th>
                   <th class="text-center">Quantity</th>
-                  <th class="text-right">Price</th>
+                  <th class="text-right">Net Price</th>
                   <th class="text-center">Status</th>
                   <th class="text-center">Date</th>
                   <th class="text-center">Manage</th>
@@ -99,6 +100,7 @@
                         {{ $data->name }} <br> <br>
                         <img src="{{ asset('upload/products/'.$data->picture) }}" width="100" height="80">
                       </td>
+                      <td class="text-right">{{ $data->product_price }}</td>
                       <td class="text-center">{{ $data->product_quantity }}</td>
                       <td class="text-right">{{ $data->net_price }}</td>
                       <td class="text-center">
@@ -107,7 +109,7 @@
                           <button class="btn btn-sm btn-primary">{{ get_status($data->order_status) }}</button>
                         </a>
                       </td>
-                      <td class="text-center">{{ $data->order_date }}</td>
+                      <td class="text-center">{{ change_date_format($data->order_date) }}</td>
                       <td class="text-center">
                         <div class="btn-group">
 

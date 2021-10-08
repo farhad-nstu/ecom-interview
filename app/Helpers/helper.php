@@ -15,26 +15,18 @@ function validation_errors($errors) {
 }
 
 function get_status($data) {
-    if($data == 1){        
+    if($data == "approved"){        
         echo 'Approved';
-    } elseif ($data == 0) {
+    } elseif ($data == "rejected") {
         echo 'Rejected';
-    } elseif ($data == 2) {
+    } elseif ($data == "processing") {
         echo 'Processing';
-    } elseif ($data == 3) {
+    } elseif ($data == "shipped") {
         echo 'Shipped';
-    } elseif ($data == 4) {
+    } elseif ($data == "delivered") {
         echo 'Delivered';
     }
 }
-
-/*****
- * getOrder()
- * sorting table fields by asc or desc
- ***
- * @$fields must be indexed array.
- * @$default must need a db table field name.
- **/
 
 function getOrder($fields, $default){
 
@@ -64,50 +56,6 @@ function getValue($field, $data, $default=null) {
     return (!empty($data) && !empty($data->$field)) ? $data->$field : old($field,$default);
 }
 
-
-if ( ! function_exists('getValueImage')) {
-    function getValueImage($old, $data){
-        if (!empty($data->$old) && is_file($data->$old)){
-            return getImage($data->$old);
-        }
-        return url('backend/images/default-avatar.png');
-    }
-}
-
-if ( ! function_exists('imageUpload')) {
-    function imageUpload($request, $image, $path){
-        if ($request->file($image)) {
-            $imageFile = $request->file($image);
-            $imageName = 'uploads/'.$path.'/'.uniqid().rand().time().'.'.$imageFile->getClientOriginalExtension();
-            Image::make($imageFile)->save($imageName);
-            return $imageName;
-        }
-    }
-}
-
-if ( ! function_exists('imageUpdate')) {
-    function imageUpdate($request, $image, $path, $imageName){
-        if ($request->file($image)) {
-            unlinkImage($imageName);
-            $name = imageUpload($request, $image, $path);
-            return $name;
-        }
-        return $imageName;
-    }
-}
-
-if (! function_exists('getImage')) {
-    function getImage($data){
-        return (is_file($data)) ? url($data):'';
-    }
-}
-
-if (! function_exists('unlinkImage')) {
-    function unlinkImage($data){
-        return (is_file($data)) ? unlink($data):'';
-    }
-}
-
 // Menu active class add
 if (! function_exists('activeMenu')) {
     function activeMenu($sig, $data){
@@ -121,11 +69,11 @@ if (! function_exists('menuOpen')) {
     }
 }
 
-// Email Send
-function emailSend($to, $subject, $data,$view='mail'){
-
-    Mail::send('email.'.$view, $data, function ($message) use ($to, $subject){
-        return $message->to($to)->subject($subject)->from('hotel@gov.bd');
-    });
+if (! function_exists('change_date_format')) {
+    function change_date_format($targetDate) {
+        $date = new DateTime($targetDate);
+        $formateDate = $date->format('F j, Y, g:i a');
+        return $formateDate;
+    }
 }
 

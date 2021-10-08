@@ -15,7 +15,7 @@ use App\Logs;
 
 class OrderController extends Controller
 {
-    protected $products;
+    protected $orders;
     protected $base_url;
 
     public function __construct(UrlGenerator $urlGenerator)
@@ -36,7 +36,7 @@ class OrderController extends Controller
             // $orders = $this->orders->orderBy("id", "DESC")->where('')->get()->toArray();
             $orders = DB::table('orders')
             		->join('products', 'orders.product_id', '=', 'products.id')
-            		->select('orders.*', 'products.name', 'products.picture', 'products.price')
+            		->select('orders.*', 'products.name', 'products.picture')
             		->where('orders.user_id', $user_id)
             		->orderBy("id", "DESC")
             		->get()->toArray();
@@ -50,7 +50,7 @@ class OrderController extends Controller
 
         $orders_paginated = DB::table('orders')
             		->join('products', 'orders.product_id', '=', 'products.id')
-            		->select('orders.*', 'products.name', 'products.picture', 'products.price')
+            		->select('orders.*', 'products.name', 'products.picture')
             		->where('orders.user_id', $user_id)
             		->orderBy("id", "DESC")
             		->paginate($pagination);
@@ -77,7 +77,7 @@ class OrderController extends Controller
 
 		    $non_paginated_search_query = DB::table('orders')
 		    		->join('products', 'orders.product_id', '=', 'products.id')
-		    		->select('orders.*', 'products.name', 'products.picture', 'products.price')
+		    		->select('orders.*', 'products.name', 'products.picture')
 		    		->where('orders.user_id', $user_id)
 		    		->where(function($query) use ($search) {
 		        			$query->where("orders.order_status", "LIKE", "%$search%");
@@ -94,7 +94,7 @@ class OrderController extends Controller
 
 		$paginated_search_query = DB::table('orders')
 				->join('products', 'orders.product_id', '=', 'products.id')
-				->select('orders.*', 'products.name', 'products.picture', 'products.price')
+				->select('orders.*', 'products.name', 'products.picture')
 				->where('orders.user_id', $user_id)
 				->where(function($query) use ($search) {
 		    			$query->where("orders.order_status", "LIKE", "%$search%");
@@ -113,7 +113,7 @@ class OrderController extends Controller
 	{
        	$order = DB::table('orders')
        		->join('products', 'orders.product_id', '=', 'products.id')
-       		->select('orders.*', 'products.name', 'products.picture', 'products.price', 'products.quantity', 'products.description')
+       		->select('orders.*', 'products.name', 'products.picture', 'products.quantity', 'products.description')
        		->where('orders.id', $id)
        		->first();
 
@@ -169,6 +169,7 @@ class OrderController extends Controller
             'order_id' => $findData->id,
             'product_id' => $findData->product_id,
             'user_id' => $findData->user_id,
+            'product_price' => $findData->product_price,
             'product_quantity' => $findData->product_quantity,
             'order_date'   => $findData->order_date,
             'shipping_address'   => $findData->shipping_address,
@@ -186,10 +187,10 @@ class OrderController extends Controller
 
 	    if($request->inside_outside == "Outside Dhaka") {
 	    	$findData->shipping_cost = 100;
-	    	$findData->net_price = $product->price * $request->product_quantity + 100;
+	    	$findData->net_price = $findData->product_price * $request->product_quantity + 100;
         } else {
         	$findData->shipping_cost = 60;
-	    	$findData->net_price = $product->price * $request->product_quantity + 60;
+	    	$findData->net_price = $findData->product_price * $request->product_quantity + 60;
         }
 
 	    $findData->update();
@@ -198,5 +199,74 @@ class OrderController extends Controller
 		  	"success"=>true,
 		  	"message"=>"Order updated successfully",
 		], 200);
+	}
+
+	public function getPaginatedEditData($id, $pagination = null) 
+	{
+		$file_directory = $this->base_url."/upload/products";
+
+        if($pagination == null || $pagination == "") {
+            // $orders = $this->orders->orderBy("id", "DESC")->where('')->get()->toArray();
+            $orders = DB::table('logs')
+            		->join('products', 'logs.product_id', '=', 'products.id')
+            		->select('logs.*', 'products.name', 'products.picture')
+            		->where('logs.order_id', $id)
+            		->orderBy("id", "DESC")
+            		->get()->toArray();
+
+            return response()->json([
+                "success"=>true,
+                "data"=>$orders,
+                "file_directory"=>$file_directory
+            ], 200);
+        }
+
+        $orders_paginated = DB::table('logs')
+            		->join('products', 'logs.product_id', '=', 'products.id')
+            		->select('logs.*', 'products.name', 'products.picture')
+            		->where('logs.order_id', $id)
+            		->orderBy("id", "DESC")
+            		->paginate($pagination);
+
+        // $orders_paginated = $this->orders->orderBy("id", "DESC")->paginate($pagination);
+
+        return response()->json([
+            "success"=>true,
+            "data"=>$orders_paginated,
+            "file_directory"=>$file_directory
+        ], 200);
+	}
+
+	public function deleteOrder($id)
+	{
+	 	$findData = $this->orders::find($id);
+
+	 	if(!$findData) {
+		    return response()->json([
+		        "success"=>true,
+		        "message"=>"Order with this id doesnt exist"
+		    ],500);
+	 	}
+
+	 	if($findData->order_status == "approved" || $order->order_status == "rejected") {
+       		return response()->json([
+       		    "success"=>true,
+       		    "message"=>"Order is approved or rejected by the admin!"
+       		], 500);
+       	}
+
+	 	$editHistory = Logs::where('order_id', $id)->get();
+	 	if(count($editHistory) > 0) {
+	 		foreach ($editHistorys as $editHistory) {
+	 			$editHistory->delete();
+	 		}
+	 	}
+
+	 	if($findData->delete()) {
+		    return response()->json([
+		        "success"=>true,
+		        "message"=>"Order deleted successfully!"
+		    ], 200);
+	 	}
 	}
 }

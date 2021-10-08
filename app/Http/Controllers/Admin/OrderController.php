@@ -100,8 +100,8 @@ class OrderController extends Controller
             'objData'       => $this->model::where($this->tableId, $id)->first(),
         ];
 
-        if($this->data['objData']->order_status == 1 || $this->data['objData']->order_status == 0) {
-            return redirect($this->bUrl)->with('success', 'Order has already approved or rejected');
+        if($this->data['objData']->order_status == "rejected" || $this->data['objData']->order_status == "approved") {
+            return redirect($this->bUrl)->with('success', 'Order is already approved or rejected');
         }
 
         $this->layout('create');
@@ -143,7 +143,7 @@ class OrderController extends Controller
             'shipping_address'   => $request['shipping_address'],
             'shipping_cost'   => $request['shipping_cost'],
             'net_price'   => $request['net_price'],
-            'order_status'   => 2,
+            'order_status'   => "processing",
         ];
 
         if ( empty($id) ) {
@@ -214,6 +214,12 @@ class OrderController extends Controller
 
         if($request->method() === 'POST' ) {    
             $this->model::where($this->tableId, $id)->update(['order_status' => $request->order_status]);
+            if($request->order_status == "delivered") {
+                $product = Product::where('id', $this->data['objData']->product_id)->first();
+                $product->quantity = $product->quantity - $this->data['objData']->product_quantity;
+                $product->update();
+            }
+
             echo json_encode(['fail' => FALSE, 'error_messages' => "Status waa updated!"]);
         } else {
             $this->layout('editStatus');

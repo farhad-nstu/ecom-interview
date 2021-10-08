@@ -10,6 +10,7 @@ use Validator;
 use Illuminate\Routing\UrlGenerator;
 use File;
 use Auth;
+use App\Mail\OrderInformed;
 
 class ProductController extends Controller
 {
@@ -83,19 +84,24 @@ class ProductController extends Controller
 
 	public function order_product(Request $request, $id, $token)
 	{
-        // dd($request->all());
 		$user = auth("users")->authenticate($token);
 	    $user_id = $user->id;
 	    $product = $this->products::where('id', $id)->first();
 
+        if($product->quantity <= 0 || $product->quantity < $request->product_quantity) {
+            return response()->json([
+                "success"=>true,
+                "message"=>"Requested amount of product is not available right now!"
+            ], 200);
+        }
+
 		$orderData = [ 
             'product_id' => $id,
             'user_id' => $user_id,
+            'product_price' => $product->price,
             'product_quantity' => $request->product_quantity,
             'order_date'   => date('Y-m-d h:i:sa'),
             'shipping_address'   => $request->shipping_address,
-            // 'shipping_cost'   => $request->shipping_cost,
-            // 'net_price'   => $product->price,
             'order_status'   => "processing",
         ];
 
@@ -108,6 +114,12 @@ class ProductController extends Controller
         }
 
         Order::create($orderData);
+
+        $data = array(
+            'message' => $request->product_quantity." piece of ".$product->name." is ordered by ".$user->firstname." ".$user->lastname." at ".date("F j, Y, g:i a"),
+        );
+
+        \Mail::to("admin@gmail.com")->send(new OrderInformed($data));
 
         return response()->json([
             "success"=>true,
