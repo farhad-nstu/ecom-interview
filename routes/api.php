@@ -24,6 +24,7 @@ function(){
     Route::get("product/search/{search}/{token}/{pagination?}","ProductController@searchData");
     Route::post("product/order/{id}/{token}","ProductController@order_product");
     Route::get("product-details/{id}","ProductController@product_details");
+    Route::get("product/filter/{filter}/{token}/{pagination?}","ProductController@filterData");
 
     Route::get("order/get-all/{token}/{pagination?}","OrderController@getPaginatedData");
     Route::get("order/search/{search}/{token}/{pagination?}","OrderController@searchData");

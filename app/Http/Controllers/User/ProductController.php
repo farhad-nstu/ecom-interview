@@ -82,6 +82,47 @@ class ProductController extends Controller
   		], 200);
 	}
 
+    public function filterData($filter, $token, $pagination = null)
+    {
+        $file_directory = $this->base_url."/upload/products";
+        $user = auth("users")->authenticate($token);
+        $user_id = $user->id;
+
+        // $filter = explode("%20", $filter);
+        // $filter = implode(" ", $filter);
+
+        if($pagination == null || $pagination == "") {
+
+            if($filter == "lowest") {
+                $non_paginated_filter_query = $this->products::orderBy("price", "ASC")->get()->toArray();
+            } else if($filter == "highest") {
+                $non_paginated_filter_query = $this->products::orderBy("price", "DESC")->get()->toArray();
+            } else {
+                $non_paginated_filter_query = $this->products::orderBy("id", "DESC")->get()->toArray();
+            }
+
+            return response()->json([
+                "success"=>true,
+                "data"=>$non_paginated_filter_query,
+                "file_directory"=>$file_directory
+            ], 200);
+        }
+
+        if($filter == "lowest") {
+            $paginated_filter_query = $this->products::orderBy("price", "ASC")->paginate($pagination);
+        } else if($filter == "highest") {
+            $paginated_filter_query = $this->products::orderBy("price", "DESC")->paginate($pagination);
+        } else {
+            $paginated_filter_query = $this->products::orderBy("id", "DESC")->paginate($pagination);
+        }
+
+        return response()->json([
+            "success"=>true,
+            "data"=>$paginated_filter_query,
+            "file_directory"=>$file_directory
+        ], 200);
+    }
+
 	public function order_product(Request $request, $id, $token)
 	{
 		$user = auth("users")->authenticate($token);
